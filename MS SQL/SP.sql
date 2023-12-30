@@ -9,7 +9,7 @@
 
 EXEC [login].[GetEmployeeData] @In_EmpId = '' ,@In_EmpRoleId = '' ,@In_EmailId = '',@In_FirstName = '',
 @In_CreatedDate = '', @In_SortBy = 'emp_id' , @In_SortOrder ='asc' ,@In_PageNumber =1 ,@In_PageSize = 25,
-@In_IsExport = 0 , @Clf_LastName = '' ,@Clf_ModifiedDate = ''
+@In_IsExport = 0 , @Clf_LastName = '' ,@Clf_ModifiedDate = '2023-01-08';
 
 -- EmpId Single selection , EmpRoleId multi selectio , Email StartWith
 
@@ -72,7 +72,7 @@ BEGIN
 	IF ISNULL(@Clf_LastName,'') <> ''
 		SET @sqlstmnt = @sqlstmnt + ' AND [last_name] like + @Clf_LastName + ''%'''
 	IF ISNULL(@Clf_ModifiedDate,'') <> ''
-		SET @sqlstmnt = @sqlstmnt + ' AND CAST(modified_date AS DATE) = @Clf_ModifiedDate '
+		SET @sqlstmnt += ' AND CAST(modified_date AS DATE) = @Clf_ModifiedDate '
 
 	SET @orderbyclause = 'ORDER BY '+ QUOTENAME(@Dv_SortBy) + ' ' + @Dv_SortOrder
 
