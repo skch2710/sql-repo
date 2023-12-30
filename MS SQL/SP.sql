@@ -49,7 +49,7 @@ BEGIN
 	SELECT @Dv_EmpId = @In_EmpId, @Dv_EmpRoleId = @In_EmpRoleId ,
 	@Dv_EmailId = @In_EmailId , @Dv_FirstName = @In_FirstName,@Dv_CreatedDate = ISNULL(@In_CreatedDate,'') ,
 	@Dv_SortBy = CASE WHEN @In_SortBy = '' THEN 'id' ELSE @In_SortBy END,
-	@Dv_SortOrder = CASE WHEN @In_SortOrder = '' THEN 'asc' ELSE @In_SortOrder END,
+	@Dv_SortOrder = CASE WHEN @In_SortOrder = '' THEN 'ASC' ELSE @In_SortOrder END,
 	@Dv_PageNumber = @In_PageNumber , @Dv_PageSize = @In_PageSize, @Dv_IsExport = @In_IsExport
 
 	SELECT ROW_NUMBER() over(order by (select 1)) id,
