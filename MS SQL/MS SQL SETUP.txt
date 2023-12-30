@@ -1,0 +1,29 @@
+https://www.microsoft.com/en-in/sql-server/sql-server-downloads
+
+1. Go to site and download express edition
+
+2. click on install and select basic
+
+Server=localhost\SQLEXPRESS;Database=master;Trusted_Connection=True;
+
+
+3. mow install SSMS
+
+https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16&redirectedfrom=MSDN
+
+4. Search "SQL Server Config Manager"
+
+	In that SQL Server Network Config -> Protocols for SQL -> TCP/IP Enabled
+	Check port number 1433 is available or not in properties
+
+
+5. Open SQL and Right Click go to properties -> Security -> Sql Server and Windows auth select Ok
+
+6. Logins -> New Login -> create user and pass
+sathish_ch    Sathish123
+
+7. go to services -> Restart SQL server , remain refresh
+
+8. Now go to login , change password
+
+sathish_ch    Sathish@123
