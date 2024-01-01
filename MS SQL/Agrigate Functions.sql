@@ -27,6 +27,11 @@ INSERT INTO [emp].[employees]([email_id],[first_name],[last_name],[salary],[dob]
 	('skch10@gmail.com','s','k',13,GETDATE());
 
 
+--- COUNT -----
+
+SELECT COUNT(e.emp_id) AS total_count from emp.employees e;
+
+SELECT e.emp_id,e.email_id,COUNT(1) OVER (PARTITION BY 1) AS total_count from emp.employees e;
 
 --- ASC NULLS FIRST
 select * from emp.employees ORDER BY salary ASC;
