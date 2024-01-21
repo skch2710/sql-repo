@@ -25,6 +25,19 @@ INSERT INTO emp.employees(email_id,first_name,last_name,salary,dob)
 	('skch@gmail.com','s','k',123.45,now()),
 	('skch9@gmail.com','s','k',0.258,now()),
 	('skch10@gmail.com','s','k',13,now());
+	
+	CREATE TABLE emp.emp_type_lkp
+(
+    emp_type_id BIGINT GENERATED ALWAYS AS IDENTITY,
+    emp_type VARCHAR(150) NOT NULL UNIQUE,
+    CONSTRAINT emp_type_lkp_pkey PRIMARY KEY (emp_type_id)
+)
+
+-- TRUNCATE TABLE [emp].[employees];
+
+INSERT INTO emp.emp_type_lkp(emp_type)
+     VALUES('Full'),
+	('Partial');
 
 --- COUNT -----
 
@@ -105,3 +118,16 @@ SELECT t.id,t.salary FROM
 SELECT ROW_NUMBER() OVER (ORDER BY salary) AS id, e.salary
 FROM emp.employees e GROUP BY e.salary
 ) t WHERE t.id=2;
+
+
+----------------------------
+select * from emp.employees;
+
+select * from emp.emp_type_lkp;
+
+
+select e.emp_id,e.email_id,et.emp_type,e.emp_type_id FROM
+emp.employees e left join emp.emp_type_lkp et on et.emp_type_id = e.emp_type_id
+WHERE ('' = '' OR e.emp_type_id::text = '')
+--(in_param = '' OR e.addr_id::text = in_param);
+

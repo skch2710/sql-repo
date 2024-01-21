@@ -15,6 +15,14 @@ UPDATE [file_upload].[file_upload] SET [created_by_id] = 1 WHERE file_id in (1,2
 ALTER TABLE file_upload.file_upload
 ADD created_by_id BIGINT DEFAULT NULL;
 
+select * from emp.employees;
+
+
+
+ALTER TABLE emp.employees
+ADD emp_type_id BIGINT DEFAULT NULL;
+
+
 ALTER TABLE file_upload.file_upload
 ADD test VARCHAR(50) DEFAULT NULL;
 

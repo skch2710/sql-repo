@@ -37,3 +37,167 @@ select * from hostel.payment_history;
 
 
 select * from hostel.hostellers h left join hostel.payment_history ph on ph.hosteller_id = h.hosteller_id;
+
+
+WITH LatestPaymentCTE AS (
+  SELECT
+    hosteller_id,
+    MAX(payment_id) AS latest_payment_id
+  FROM
+    hostel.payment_history
+  GROUP BY
+    hosteller_id
+)
+SELECT
+  lp.latest_payment_id,
+  h.hosteller_id,
+  ph.fee_paid,
+  ph.fee_due,
+  ph.fee_date,
+  h.full_name,
+  h.email_id
+FROM
+  hostel.hostellers h
+LEFT JOIN
+  LatestPaymentCTE lp ON h.hosteller_id = lp.hosteller_id
+LEFT JOIN
+  hostel.payment_history ph ON lp.latest_payment_id = ph.payment_id;
+
+-------------------------------------------
+
+CREATE TABLE IF NOT EXISTS hostel.users
+(
+    user_id bigint GENERATED ALWAYS AS IDENTITY,
+	first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    email_id VARCHAR(255) NOT NULL UNIQUE,
+	password_salt VARCHAR(255),
+	phone_number VARCHAR(50),
+	dob DATE,
+	mail_uuid VARCHAR(150),
+	user_uuid VARCHAR(150),
+	is_active boolean,
+	last_login_date TIMESTAMP,
+	last_password_reset_date TIMESTAMP,
+	created_by_id bigint,
+    created_date TIMESTAMP ,
+    modified_by_id bigint,
+    modified_date TIMESTAMP ,
+    CONSTRAINT users_pkey PRIMARY KEY (user_id)
+);
+
+select * from hostel.users;
+
+
+CREATE TABLE IF NOT EXISTS hostel.roles
+(
+    role_id bigint,
+    role_name VARCHAR(100) NOT NULL,
+    is_active boolean,
+    is_external_role boolean,
+    note text,
+    created_by_id bigint,
+    created_date TIMESTAMP,
+    modified_by_id bigint,
+    modified_date TIMESTAMP,
+    CONSTRAINT h_roles_pkey PRIMARY KEY (role_id)
+);
+
+select * from hostel.roles;
+
+INSERT INTO hostel.roles VALUES 
+(1,'Super User',true,false,'Internal Super User',1,now(),1,now()),
+(2,'Admin',true,true,'External Admin',1,now(),1,now());
+
+
+CREATE TABLE IF NOT EXISTS hostel.user_roles
+(
+    user_role_id bigint GENERATED ALWAYS AS IDENTITY,
+    user_id bigint,
+    role_id bigint,
+    is_active boolean,
+    created_by_id bigint,
+    created_date TIMESTAMP,
+    modified_by_id bigint,
+    modified_date TIMESTAMP,
+    CONSTRAINT h_user_roles_pkey PRIMARY KEY (user_role_id)
+);
+
+select * from hostel.user_roles;
+
+
+CREATE TABLE IF NOT EXISTS hostel.resource
+(
+    resource_id bigint,
+	resource_name VARCHAR(250),
+	resource_path VARCHAR(250),
+	icon VARCHAR(250),
+	display_order BIGINT,
+	is_subnav CHAR(1), 
+    is_active boolean,
+    CONSTRAINT h_resource_pkey PRIMARY KEY (resource_id)
+);
+
+select * from hostel.resource;
+
+INSERT INTO hostel.resource(
+	resource_id, resource_name, resource_path, icon, display_order, is_subnav, is_active)
+	VALUES (1, 'Home', '/home', 'home.png', 1, 'N', true),
+	(2, 'Reports', '/reports', 'reports.png', 2, 'N', true),
+	(3, 'Monthly', '/reports/monthly', 'monthly.png', 2, 'Y', true),
+	(4, 'Yearly', '/reports/yearly', 'yearly.png', 2, 'Y', true),
+	(5, 'Hostellers', '/hostellers', 'hostellers.png', 3, 'N', true),
+	(6, 'User', '/user', 'user.png', 4, 'N', true);
+
+CREATE TABLE IF NOT EXISTS hostel.user_privileges
+(
+    user_privileges_id bigint GENERATED ALWAYS AS IDENTITY,
+    user_id bigint,
+    resource_id bigint,
+	read_only_flag boolean,
+	read_write_flag boolean,
+	terminate_flag boolean,
+    is_active boolean,
+    created_by_id bigint,
+    created_date TIMESTAMP,
+    modified_by_id bigint,
+    modified_date TIMESTAMP,
+    CONSTRAINT h_user_privileges_pkey PRIMARY KEY (user_privileges_id)
+);
+
+select * from hostel.user_privileges;
+
+CREATE TABLE IF NOT EXISTS hostel.role_privileges
+(
+    role_privileges_id bigint GENERATED ALWAYS AS IDENTITY,
+    role_id bigint,
+    resource_id bigint,
+	read_only_flag boolean,
+	read_write_flag boolean,
+	terminate_flag boolean,
+    is_active boolean,
+    created_by_id bigint,
+    created_date TIMESTAMP,
+    modified_by_id bigint,
+    modified_date TIMESTAMP,
+    CONSTRAINT h_role_privileges_pkey PRIMARY KEY (role_privileges_id)
+);
+
+select * from hostel.role_privileges;
+
+INSERT INTO hostel.role_privileges(role_id, resource_id, read_only_flag, read_write_flag, terminate_flag, is_active,
+	created_by_id, created_date, modified_by_id, modified_date)
+	VALUES ( 1, 1, true, true, true, true, 1, now(), 1, now()),
+		   ( 1, 2, true, true, true, true, 1, now(), 1, now()),
+		   ( 1, 3, true, true, true, true, 1, now(), 1, now()),
+		   ( 1, 4, true, true, true, true, 1, now(), 1, now()),
+		   ( 1, 5, true, true, true, true, 1, now(), 1, now()),
+		   ( 1, 6, true, true, true, true, 1, now(), 1, now()),
+		   
+		   ( 2, 1, true, false, false, true, 1, now(), 1, now()),
+		   ( 2, 2, true, false, false, true, 1, now(), 1, now()),
+		   ( 2, 3, true, false, false, true, 1, now(), 1, now()),
+		   ( 2, 4, true, false, false, true, 1, now(), 1, now()),
+		   ( 2, 5, true, true, true, true, 1, now(), 1, now()),
+		   ( 2, 6, false, false, false, true, 1, now(), 1, now());
+
