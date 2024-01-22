@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS hostel.roles
     CONSTRAINT h_roles_pkey PRIMARY KEY (role_id)
 );
 
+
 select * from hostel.roles;
 
 INSERT INTO hostel.roles VALUES 
@@ -123,6 +124,7 @@ CREATE TABLE IF NOT EXISTS hostel.user_roles
     CONSTRAINT h_user_roles_pkey PRIMARY KEY (user_role_id)
 );
 
+
 select * from hostel.user_roles;
 
 
@@ -137,6 +139,7 @@ CREATE TABLE IF NOT EXISTS hostel.resource
     is_active boolean,
     CONSTRAINT h_resource_pkey PRIMARY KEY (resource_id)
 );
+
 
 select * from hostel.resource;
 
@@ -165,6 +168,7 @@ CREATE TABLE IF NOT EXISTS hostel.user_privileges
     CONSTRAINT h_user_privileges_pkey PRIMARY KEY (user_privileges_id)
 );
 
+
 select * from hostel.user_privileges;
 
 CREATE TABLE IF NOT EXISTS hostel.role_privileges
@@ -183,6 +187,7 @@ CREATE TABLE IF NOT EXISTS hostel.role_privileges
     CONSTRAINT h_role_privileges_pkey PRIMARY KEY (role_privileges_id)
 );
 
+
 select * from hostel.role_privileges;
 
 INSERT INTO hostel.role_privileges(role_id, resource_id, read_only_flag, read_write_flag, terminate_flag, is_active,
@@ -200,4 +205,17 @@ INSERT INTO hostel.role_privileges(role_id, resource_id, read_only_flag, read_wr
 		   ( 2, 4, true, false, false, true, 1, now(), 1, now()),
 		   ( 2, 5, true, true, true, true, 1, now(), 1, now()),
 		   ( 2, 6, false, false, false, true, 1, now(), 1, now());
+
+
+
+-----------
+
+select * from hostel.users;
+select * from hostel.roles;
+select * from hostel.user_roles;
+select * from hostel.resource;
+select * from hostel.user_privileges;
+select * from hostel.role_privileges;
+
+
 
