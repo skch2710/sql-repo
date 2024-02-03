@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS hostel.user_roles
 
 select * from hostel.user_roles;
 
-
+--DROP TABLE hostel.resource;
 CREATE TABLE IF NOT EXISTS hostel.resource
 (
     resource_id bigint,
@@ -135,7 +135,10 @@ CREATE TABLE IF NOT EXISTS hostel.resource
 	resource_path VARCHAR(250),
 	icon VARCHAR(250),
 	display_order BIGINT,
-	is_subnav CHAR(1), 
+	is_subnav CHAR(1),
+	parent_name VARCHAR(250),
+	parent_path VARCHAR(250),
+	parent_icon VARCHAR(250),
     is_active boolean,
     CONSTRAINT h_resource_pkey PRIMARY KEY (resource_id)
 );
@@ -144,13 +147,13 @@ CREATE TABLE IF NOT EXISTS hostel.resource
 select * from hostel.resource;
 
 INSERT INTO hostel.resource(
-	resource_id, resource_name, resource_path, icon, display_order, is_subnav, is_active)
-	VALUES (1, 'Home', '/home', 'home.png', 1, 'N', true),
-	(2, 'Reports', '/reports', 'reports.png', 2, 'N', true),
-	(3, 'Monthly', '/reports/monthly', 'monthly.png', 2, 'Y', true),
-	(4, 'Yearly', '/reports/yearly', 'yearly.png', 2, 'Y', true),
-	(5, 'Hostellers', '/hostellers', 'hostellers.png', 3, 'N', true),
-	(6, 'User', '/user', 'user.png', 4, 'N', true);
+	resource_id, resource_name, resource_path, icon, display_order, is_subnav,parent_name,parent_path,parent_icon, is_active)
+	VALUES (1, 'Home', '/home', 'home.png', 1, 'N','Home',NULL,'home.png', true),
+	(2, 'Full Reports', '/reports/full-reports', 'full-reports.png', 2, 'Y','Reports','/reports','reports.png', true),
+	(3, 'Monthly', '/reports/monthly', 'monthly.png', 2, 'Y','Reports','/reports','reports.png', true),
+	(4, 'Yearly', '/reports/yearly', 'yearly.png', 2, 'Y','Reports','/reports','reports.png', true),
+	(5, 'Hostellers', '/hostellers', 'hostellers.png', 3, 'N','Hostellers',NULL,'hostellers.png', true),
+	(6, 'User', '/user', 'user.png', 4, 'N','User',NULL,'user.png', true);
 
 CREATE TABLE IF NOT EXISTS hostel.user_privileges
 (
@@ -214,8 +217,30 @@ select * from hostel.users;
 select * from hostel.roles;
 select * from hostel.user_roles;
 select * from hostel.resource;
-select * from hostel.user_privileges;
+select * from hostel.user_privileges where user_id=2;
 select * from hostel.role_privileges;
 
 
+------ Inser User 
+
+INSERT INTO hostel.users(
+	 first_name, last_name, email_id, password_salt, phone_number, dob, mail_uuid, user_uuid, is_active, last_login_date,
+	last_password_reset_date, created_by_id, created_date, modified_by_id, modified_date)
+	VALUES ( 'system', 'user', 'skch@outlook.com', '$2a$10$OeZfp.6TtOhTQgO8DaUw8OJV4cqxQ3fZdLjUDUb46ZD/S6Z3aW1zq', 
+			'123456', now(), null,null, true, now(), now(), 1, now(), 1, now());
+
+INSERT INTO hostel.user_roles(
+	 user_id, role_id, is_active, created_by_id, created_date, modified_by_id, modified_date)
+	VALUES (3, 1, true, 1, now(), 1, now());
+
+
+INSERT INTO hostel.user_privileges(
+	user_id, resource_id, read_only_flag, read_write_flag, terminate_flag, is_active, 
+	created_by_id, created_date, modified_by_id, modified_date)
+	VALUES (3, 1, true, true, true, true, 1, now(), 1, now()),
+	(3, 2, true, true, true, true, 1, now(), 1, now()),
+	(3, 3, true, true, true, true, 1, now(), 1, now()),
+	(3, 4, true, true, true, true, 1, now(), 1, now()),
+	(3, 5, true, true, true, true, 1, now(), 1, now()),
+	(3, 6, true, true, true, true, 1, now(), 1, now());
 
