@@ -137,7 +137,6 @@ CREATE TABLE IF NOT EXISTS hostel.resource
 	display_order BIGINT,
 	is_subnav CHAR(1),
 	parent_name VARCHAR(250),
-	parent_path VARCHAR(250),
 	parent_icon VARCHAR(250),
     is_active boolean,
     CONSTRAINT h_resource_pkey PRIMARY KEY (resource_id)
@@ -147,13 +146,13 @@ CREATE TABLE IF NOT EXISTS hostel.resource
 select * from hostel.resource;
 
 INSERT INTO hostel.resource(
-	resource_id, resource_name, resource_path, icon, display_order, is_subnav,parent_name,parent_path,parent_icon, is_active)
-	VALUES (1, 'Home', '/home', 'home.png', 1, 'N','Home',NULL,'home.png', true),
-	(2, 'Full Reports', '/reports/full-reports', 'full-reports.png', 2, 'Y','Reports','/reports','reports.png', true),
-	(3, 'Monthly', '/reports/monthly', 'monthly.png', 2, 'Y','Reports','/reports','reports.png', true),
-	(4, 'Yearly', '/reports/yearly', 'yearly.png', 2, 'Y','Reports','/reports','reports.png', true),
-	(5, 'Hostellers', '/hostellers', 'hostellers.png', 3, 'N','Hostellers',NULL,'hostellers.png', true),
-	(6, 'User', '/user', 'user.png', 4, 'N','User',NULL,'user.png', true);
+	resource_id, resource_name, resource_path, icon, display_order, is_subnav,parent_name,parent_icon, is_active)
+	VALUES (1, 'Home', '/home', 'home.png', 1, 'N','Home','home.png', true),
+	(2, 'Full Reports', '/reports/full-reports', 'full-reports.png', 2, 'Y','Reports','reports.png', true),
+	(3, 'Monthly', '/reports/monthly', 'monthly.png', 2, 'Y','Reports','reports.png', true),
+	(4, 'Yearly', '/reports/yearly', 'yearly.png', 2, 'Y','Reports','reports.png', true),
+	(5, 'Hostellers', '/hostellers', 'hostellers.png', 3, 'N','Hostellers','hostellers.png', true),
+	(6, 'User', '/user', 'user.png', 4, 'N','User','user.png', true);
 
 CREATE TABLE IF NOT EXISTS hostel.user_privileges
 (

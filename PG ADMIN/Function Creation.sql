@@ -20,6 +20,75 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+/****** Function With Dynamic SQL And Exception *****/
+
+select * from fn_employee_data();
+
+-- DROP FUNCTION fn_employee_data();
+
+CREATE OR REPLACE FUNCTION public.fn_employee_data()
+RETURNS TABLE (rn_id BIGINT, emp_id BIGINT, email_id VARCHAR, first_name VARCHAR, last_name VARCHAR, created_by_id BIGINT,
+               emp_role_id BIGINT, role_id BIGINT, role_name VARCHAR, is_external_role BOOLEAN, total_count BIGINT)
+AS $BODY$
+
+DECLARE dynamic_sql TEXT;
+DECLARE err_state TEXT; err_message TEXT; err_detail TEXT; err_hint TEXT; err_context TEXT;
+
+BEGIN
+    dynamic_sql := 'SELECT ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS rn_id,
+                    e.emp_id, e.email_id, e.first_name, e.last_name, e.created_by_id,
+                    er.emp_role_id, r.role_id, r.role_name, r.is_external_role,
+                    COUNT(1) OVER (PARTITION BY 1) AS total_count
+                    FROM login.employees e
+                    LEFT JOIN login.emp_roles er ON e.emp_id = er.emp_id 
+                    LEFT JOIN login.roles r ON r.role_id = er.role_id';
+    
+    -- Print the generated SQL statement for debugging
+    RAISE NOTICE 'Generated SQL Statement: %', dynamic_sql;
+
+    -- Execute the dynamic SQL statement and return the results
+    RETURN QUERY EXECUTE dynamic_sql;
+
+EXCEPTION
+    -- Catch any SQL errors and raise a NOTICE with the error message
+    WHEN OTHERS THEN
+		/** Simple Way **/
+        --RAISE NOTICE 'An error occurred while executing dynamic SQL: %', SQLERRM;
+		--INSERT INTO public.fn_errors(fn_name, dynamic_sql, fn_error)
+		--VALUES ('public.fn_employee_data', dynamic_sql, SQLERRM);
+		/** Retrieve stacked diagnostics **/
+        GET STACKED DIAGNOSTICS err_state = RETURNED_SQLSTATE,
+                            err_message = MESSAGE_TEXT,
+                            err_detail = PG_EXCEPTION_DETAIL,
+                            err_hint = PG_EXCEPTION_HINT,
+                            err_context = PG_EXCEPTION_CONTEXT;
+
+        -- Raise a notice with the error message and stacked diagnostics
+        RAISE NOTICE 'An error occurred while executing dynamic SQL>>>>  SQLSTATE: %.  Message: %. Detail: %. Hint: %. Context: %',
+                        err_state, err_message, err_detail, err_hint, err_context;
+		INSERT INTO public.error_logs(object_name, object_type, err_state,err_message,err_detail,err_hint,err_context)
+		VALUES ('public.fn_employee_data','FUNCTION', err_state,err_message,err_detail,err_hint,err_context);
+        RETURN;
+END;
+$BODY$ LANGUAGE plpgsql;
+
+/**** Table to Store the function Exceptions **/
+select * from public.error_logs;
+CREATE TABLE IF NOT EXISTS public.error_logs
+(
+    err_log_id bigint GENERATED ALWAYS AS IDENTITY,
+    object_name TEXT,
+	object_type TEXT,
+	err_state TEXT,
+    err_message TEXT,
+	err_detail TEXT,
+	err_hint TEXT,
+	err_context TEXT,
+    created_date TIMESTAMP DEFAULT now(),
+    
+    CONSTRAINT error_logs_pkey PRIMARY KEY (err_log_id)
+);
+
 /******** Function With Pagination Sort ****/
 
 -- select * from public.get_employee_data('1,2','','skch2710@gmail.com,skch@gmail.com','','','','',1,25,false,'','08/30/2023');
@@ -42,7 +111,7 @@ RETURNS TABLE (rn_id BIGINT,emp_id BIGINT, email_id VARCHAR,first_name VARCHAR,l
 			   emp_role_id BIGINT,role_id BIGINT,role_name VARCHAR,is_external_role boolean,modified_date TIMESTAMP,total_count BIGINT)
 AS $BODY$
 
-declare dynamic_sql text;
+DECLARE dynamic_sql text;
 
 BEGIN
 
