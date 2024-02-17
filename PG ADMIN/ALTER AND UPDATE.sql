@@ -12,16 +12,16 @@ UPDATE [file_upload].[file_upload] SET [created_by_id] = 1 WHERE file_id in (1,2
 		...;
  */
 
-ALTER TABLE file_upload.file_upload
-ADD created_by_id BIGINT DEFAULT NULL;
+ALTER TABLE IF EXISTS file_upload.file_upload
+ADD COLUMN IF NOT EXISTS created_by_id BIGINT DEFAULT NULL;
+
+ALTER TABLE IF EXISTS file_upload.file_upload
+ALTER COLUMN created_by_id DROP NOT NULL;
 
 select * from emp.employees;
 
-
-
 ALTER TABLE emp.employees
 ADD emp_type_id BIGINT DEFAULT NULL;
-
 
 ALTER TABLE file_upload.file_upload
 ADD test VARCHAR(50) DEFAULT NULL;
@@ -52,3 +52,20 @@ FROM
 LEFT JOIN
     login.employees e2 ON e1.created_by_id = e2.emp_id;
 
+
+
+------- CTE Example
+
+WITH CTE1 AS (
+    SELECT column1, column2
+    FROM table1
+    WHERE condition1
+),
+CTE2 AS (
+    SELECT column3, column4
+    FROM table2
+    WHERE condition2
+)
+SELECT CTE1.column1, CTE1.column2, CTE2.column3, CTE2.column4
+FROM CTE1
+JOIN CTE2 ON CTE1.column1 = CTE2.column3;

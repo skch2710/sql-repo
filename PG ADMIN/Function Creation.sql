@@ -64,7 +64,7 @@ EXCEPTION
                             err_context = PG_EXCEPTION_CONTEXT;
 
         -- Raise a notice with the error message and stacked diagnostics
-        RAISE NOTICE 'An error occurred while executing dynamic SQL>>>>  SQLSTATE: %.  Message: %. Detail: %. Hint: %. Context: %',
+        RAISE WARNING 'An error occurred while executing dynamic SQL>>>>  SQLSTATE: %.  Message: %. Detail: %. Hint: %. Context: %',
                         err_state, err_message, err_detail, err_hint, err_context;
 		INSERT INTO public.error_logs(object_name, object_type, err_state,err_message,err_detail,err_hint,err_context)
 		VALUES ('public.fn_employee_data','FUNCTION', err_state,err_message,err_detail,err_hint,err_context);
@@ -112,7 +112,7 @@ RETURNS TABLE (rn_id BIGINT,emp_id BIGINT, email_id VARCHAR,first_name VARCHAR,l
 AS $BODY$
 
 DECLARE dynamic_sql text;
-
+DECLARE err_state TEXT; err_message TEXT; err_detail TEXT; err_hint TEXT; err_context TEXT;
 BEGIN
 
 	DROP TABLE IF EXISTS temp_emp_data;
@@ -156,6 +156,54 @@ BEGIN
 	
 	RETURN QUERY EXECUTE dynamic_sql using clf_last_name||'%',in_page_size,in_page_number,
 	clf_modified_date;
-	
+
+EXCEPTION
+    -- Catch any SQL errors and raise a NOTICE with the error message
+    WHEN OTHERS THEN
+        GET STACKED DIAGNOSTICS err_state = RETURNED_SQLSTATE,
+                            err_message = MESSAGE_TEXT,
+                            err_detail = PG_EXCEPTION_DETAIL,
+                            err_hint = PG_EXCEPTION_HINT,
+                            err_context = PG_EXCEPTION_CONTEXT;
+        -- Raise a notice with the error message and stacked diagnostics
+        RAISE WARNING 'An error occurred while executing dynamic SQL>>>>  SQLSTATE: %.  Message: %. Detail: %. Hint: %. Context: %',
+                        err_state, err_message, err_detail, err_hint, err_context;
+		INSERT INTO public.error_logs(object_name, object_type, err_state,err_message,err_detail,err_hint,err_context)
+		VALUES ('public.get_employee_data','FUNCTION', err_state,err_message,err_detail,err_hint,err_context);
+        RETURN;
+
 END;
 $BODY$ LANGUAGE plpgsql;
+
+
+
+--------------------- PROCEDURE --------
+
+-- CALL example_procedure();
+
+-- DROP PROCEDURE example_procedure()
+
+CREATE OR REPLACE PROCEDURE example_procedure()
+AS $$
+DECLARE result TEXT;
+DECLARE err_state TEXT; err_message TEXT; err_detail TEXT; err_hint TEXT; err_context TEXT;
+BEGIN
+	
+	result := (1 + 5);
+	
+	RAISE NOTICE 'RESULT : %',result;
+	
+EXCEPTION
+    WHEN OTHERS THEN
+	GET STACKED DIAGNOSTICS err_state = RETURNED_SQLSTATE,
+                            err_message = MESSAGE_TEXT,
+                            err_detail = PG_EXCEPTION_DETAIL,
+                            err_hint = PG_EXCEPTION_HINT,
+                            err_context = PG_EXCEPTION_CONTEXT;
+        -- Handle the exception
+        RAISE WARNING 'An error occurred: %', SQLERRM;
+        result := NULL; -- Or handle the error in an appropriate way
+END;
+$$ LANGUAGE plpgsql;
+
+
