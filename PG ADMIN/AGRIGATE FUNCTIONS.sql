@@ -131,3 +131,13 @@ emp.employees e left join emp.emp_type_lkp et on et.emp_type_id = e.emp_type_id
 WHERE ('' = '' OR e.emp_type_id::text = '')
 --(in_param = '' OR e.addr_id::text = in_param);
 
+
+--------------------  COALESCE -------
+
+SELECT COALESCE(MAX(version_no),0) as max_version from file_upload.file_upload WHERE org_id=10;
+
+SELECT COALESCE(MAX(version_no),0)+1 as max_version from file_upload.file_upload WHERE org_id=1;
+
+SELECT COALESCE('true','false')='false';
+
+SELECT COALESCE('sa' , '') <> '';
