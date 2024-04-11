@@ -1,19 +1,33 @@
+-- FUNCTION: public.fn_get_hostellers(text, text, text, text, integer, integer, boolean, text)
 
---select * from public.fn_get_hostellers('', '', '', '', 1, 25, false, '');
+-- DROP FUNCTION IF EXISTS public.fn_get_hostellers(text, text, text, text, integer, integer, boolean, text);
 
 CREATE OR REPLACE FUNCTION public.fn_get_hostellers(
-	in_full_name TEXT DEFAULT ''::TEXT,
-	in_email_id TEXT DEFAULT ''::TEXT,
-	in_sort_by TEXT DEFAULT 'hosteller_id',
-	in_sort_order TEXT DEFAULT 'DESC',
-	in_Page_number INTEGER DEFAULT 1,
-	in_page_size INTEGER DEFAULT 5,
-	in_is_export BOOLEAN DEFAULT false,
-	clf_full_name TEXT DEFAULT ''
-)
-RETURNS TABLE (hosteller_id BIGINT,full_name VARCHAR, email_id VARCHAR,phone_number VARCHAR,fee NUMERIC(14,2),joining_date TIMESTAMP,
-			   address TEXT,proof TEXT,reason VARCHAR,vacated_date TIMESTAMP,active BOOLEAN,total_count BIGINT)
+	in_full_name text DEFAULT ''::text,
+	in_email_id text DEFAULT ''::text,
+	in_sort_by text DEFAULT 'hosteller_id'::text,
+	in_sort_order text DEFAULT 'desc'::text,
+	in_page_number integer DEFAULT 1,
+	in_page_size integer DEFAULT 5,
+	in_is_export boolean DEFAULT false,
+	clf_full_name text DEFAULT ''::text)
+    RETURNS TABLE(hosteller_id bigint, full_name character varying, email_id character varying, phone_number character varying, fee numeric, joining_date timestamp without time zone, address text, proof text, reason character varying, vacated_date timestamp without time zone, active boolean, total_count bigint) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
 AS $BODY$
+
+/***
+
+-- Author	  :	Ch Sathish Kumar
+-- Create date: 11-04-2024
+-- Description:	get hostel data
+
+-- EXEC SCRIPT : select * from public.fn_get_hostellers('', '', '', '', 1, 25, false, '')
+
+***/
 
 DECLARE dynamic_sql TEXT;
 DECLARE err_state TEXT; err_message TEXT; err_detail TEXT; err_hint TEXT; err_conTEXT TEXT;
@@ -39,11 +53,9 @@ BEGIN
 	
 	dynamic_sql := dynamic_sql || ' ORDER BY ' ||
 		CASE 
-			WHEN in_sort_by = 'full_name' THEN 'full_name'
-			WHEN in_sort_by = 'email_id' THEN 'email_id'
-			WHEN in_sort_by = 'hosteller_id' THEN 'hosteller_id'
-			ELSE 'hosteller_id'
-			END || CASE WHEN in_sort_order='ASC' THEN ' ASC NULLS FIRST' ELSE ' DESC NULLS LAST' END;
+			WHEN in_sort_by = '' THEN 'full_name'
+			ELSE in_sort_by
+			END || CASE WHEN in_sort_order='asc' THEN ' asc NULLS FIRST' ELSE ' desc NULLS LAST' END;
 			
 	IF COALESCE(in_is_export,'false') ='false' THEN
 		dynamic_sql := dynamic_sql ||' LIMIT $2 OFFSET ($3 - 1) * $2';
@@ -69,4 +81,7 @@ EXCEPTION
         RETURN;
 
 END;
-$BODY$ LANGUAGE plpgsql;
+$BODY$;
+
+ALTER FUNCTION public.fn_get_hostellers(text, text, text, text, integer, integer, boolean, text)
+    OWNER TO postgres;
