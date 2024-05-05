@@ -6,6 +6,8 @@ select now() :: date
 
 select '2022-01-21' :: date
 
+SELECT TO_DATE('21/01/2022', 'DD/MM/YYYY');
+
 SELECT TO_CHAR(now(), 'MM/DD/YYYY') AS formatted_date;
 
 SELECT TO_CHAR(now(), 'DD-MM-YYYY') AS formatted_date;
