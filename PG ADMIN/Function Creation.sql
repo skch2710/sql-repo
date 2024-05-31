@@ -117,7 +117,7 @@ BEGIN
 
 	DROP TABLE IF EXISTS temp_emp_data;
 	
-	CREATE TEMPORARY TABLE temp_emp_data AS
+	CREATE TEMPORARY TABLE temp_emp_data ON COMMIT DROP AS
     	SELECT e.emp_id,e.email_id,e.first_name,e.last_name,e.created_by_id,
 		er.emp_role_id,r.role_id,r.role_name,r.is_external_role,
 		e.modified_date

@@ -35,7 +35,7 @@ BEGIN
 
 	DROP TABLE IF EXISTS temp_hostel_data;
 	
-	CREATE TEMPORARY TABLE temp_hostel_data AS
+	CREATE TEMPORARY TABLE temp_hostel_data ON COMMIT DROP AS
     	SELECT h.hosteller_id,h.full_name, h.email_id,
 		h.phone_number,h.fee,h.joining_date ,
 		h.address ,h.proof ,h.reason ,

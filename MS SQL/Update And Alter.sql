@@ -32,6 +32,12 @@ DROP CONSTRAINT DF__file_uploa__test__6EF57B66;
 ALTER TABLE [file_upload].[file_upload]
 DROP COLUMN test;
 
+-- Enable identity insert
+SET IDENTITY_INSERT emp.employees ON;
+
+-- Disable identity insert
+SET IDENTITY_INSERT emp.employees OFF;
+
 ------------------------------------------ 
 
 select f.file_id,f.file_name , e.email_id,e.first_name+' '+e.last_name AS full_name

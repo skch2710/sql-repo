@@ -36,6 +36,20 @@ ADD test VARCHAR(50) DEFAULT NULL;
 ALTER TABLE file_upload.file_upload
 DROP COLUMN test;
 
+-- Find the sequence name
+SELECT pg_get_serial_sequence('hostel.users', 'user_id');
+
+-- Drop the sequence (assuming the sequence name is 'example_table_id_seq')
+DROP SEQUENCE hostel.users_user_id_seq;
+
+
+ALTER TABLE hostel.users
+  ALTER COLUMN user_id DROP IDENTITY;
+
+ALTER TABLE hostel.users 
+	ALTER COLUMN user_id ADD GENERATED ALWAYS AS IDENTITY;
+
+
 ------------------------------------------ 
 
 select f.file_id,f.file_name , e.email_id,e.first_name || ' ' || e.last_name AS full_name
@@ -69,3 +83,6 @@ CTE2 AS (
 SELECT CTE1.column1, CTE1.column2, CTE2.column3, CTE2.column4
 FROM CTE1
 JOIN CTE2 ON CTE1.column1 = CTE2.column3;
+
+
+
