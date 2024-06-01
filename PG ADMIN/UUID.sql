@@ -1,0 +1,10 @@
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+select uuid_generate_v4();
+
+SELECT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT AS current_time_milliseconds;
+
+select CONCAT(uuid_generate_v4(),'#',(EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT)
+
