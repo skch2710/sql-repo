@@ -141,3 +141,15 @@ SELECT COALESCE(MAX(version_no),0)+1 as max_version from file_upload.file_upload
 SELECT COALESCE('true','false')='false';
 
 SELECT COALESCE('sa' , '') <> '';
+
+
+------------- INTERVAL ------
+SELECT CURRENT_DATE - INTERVAL '10 days';
+
+SELECT CURRENT_DATE - CONCAT('10',' days')::INTERVAL;
+
+SELECT CURRENT_DATE + CONCAT('10',' days')::INTERVAL;
+
+-------- DATE_PART -----
+
+SELECT DATE_PART('day',now()-TO_DATE('21/02/2024', 'DD/MM/YYYY'));
