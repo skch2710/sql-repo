@@ -1,3 +1,5 @@
+create schema hostel;
+
 create table hostel.hostellers(
 	hosteller_id BIGINT GENERATED ALWAYS AS IDENTITY,
 	full_name VARCHAR(250),
@@ -216,7 +218,7 @@ select * from hostel.users;
 select * from hostel.roles;
 select * from hostel.user_roles;
 select * from hostel.resource;
-select * from hostel.user_privileges where user_id=2;
+select * from hostel.user_privileges where user_id=1;
 select * from hostel.role_privileges;
 
 
@@ -230,16 +232,16 @@ INSERT INTO hostel.users(
 
 INSERT INTO hostel.user_roles(
 	 user_id, role_id, is_active, created_by_id, created_date, modified_by_id, modified_date)
-	VALUES (3, 1, true, 1, now(), 1, now());
+	VALUES (1, 1, true, 1, now(), 1, now());
 
 
 INSERT INTO hostel.user_privileges(
 	user_id, resource_id, read_only_flag, read_write_flag, terminate_flag, is_active, 
 	created_by_id, created_date, modified_by_id, modified_date)
-	VALUES (3, 1, true, true, true, true, 1, now(), 1, now()),
-	(3, 2, true, true, true, true, 1, now(), 1, now()),
-	(3, 3, true, true, true, true, 1, now(), 1, now()),
-	(3, 4, true, true, true, true, 1, now(), 1, now()),
-	(3, 5, true, true, true, true, 1, now(), 1, now()),
-	(3, 6, true, true, true, true, 1, now(), 1, now());
+	VALUES (1, 1, true, true, true, true, 1, now(), 1, now()),
+	(1, 2, true, true, true, true, 1, now(), 1, now()),
+	(1, 3, true, true, true, true, 1, now(), 1, now()),
+	(1, 4, true, true, true, true, 1, now(), 1, now()),
+	(1, 5, true, true, true, true, 1, now(), 1, now()),
+	(1, 6, true, true, true, true, 1, now(), 1, now());
 
