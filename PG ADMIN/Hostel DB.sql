@@ -4,7 +4,7 @@ create table hostel.hostellers(
 	hosteller_id BIGINT GENERATED ALWAYS AS IDENTITY,
 	full_name VARCHAR(250),
 	email_id VARCHAR(150) NOT NULL UNIQUE,
-	pnome_number VARCHAR(150),
+	phone_number VARCHAR(150),
 	fee NUMERIC(14,2) NOT NULL,
 	joining_date TIMESTAMP,
 	address TEXT,
