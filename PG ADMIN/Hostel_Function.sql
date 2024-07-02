@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION public.fn_get_hostellers(
 	in_page_size integer DEFAULT 5,
 	in_is_export boolean DEFAULT false,
 	clf_full_name text DEFAULT ''::text)
-    RETURNS TABLE(hosteller_id bigint, full_name character varying, email_id character varying, phone_number character varying, fee numeric, joining_date timestamp without time zone, address text, proof text, reason character varying, vacated_date timestamp without time zone, active boolean, total_count bigint) 
+    RETURNS TABLE(hosteller_id bigint, full_name character varying, email_id character varying, phone_number character varying, dob date, fee numeric, joining_date timestamp without time zone, address text, proof text, reason character varying, vacated_date timestamp without time zone, active boolean, total_count bigint) 
     LANGUAGE 'plpgsql'
     COST 100
     VOLATILE PARALLEL UNSAFE
@@ -37,7 +37,8 @@ BEGIN
 	
 	CREATE TEMPORARY TABLE temp_hostel_data ON COMMIT DROP AS
     	SELECT h.hosteller_id,h.full_name, h.email_id,
-		h.phone_number,h.fee,h.joining_date ,
+		h.phone_number,h.dob,
+		h.fee,h.joining_date ,
 		h.address ,h.proof ,h.reason ,
 		h.vacated_date ,h.active
 		FROM hostel.hostellers h
