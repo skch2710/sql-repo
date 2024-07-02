@@ -1,10 +1,11 @@
 create schema hostel;
 
-create table hostel.hostellers(
+CREATE TABLE hostel.hostellers(
 	hosteller_id BIGINT GENERATED ALWAYS AS IDENTITY,
 	full_name VARCHAR(250),
 	email_id VARCHAR(150) NOT NULL UNIQUE,
 	phone_number VARCHAR(150),
+	dob DATE DEFAULT NULL,
 	fee NUMERIC(14,2) NOT NULL,
 	joining_date TIMESTAMP,
 	address TEXT,
@@ -13,9 +14,9 @@ create table hostel.hostellers(
 	vacated_date TIMESTAMP,
 	active BOOLEAN DEFAULT true,
 	created_by_id BIGINT,
-    created_date TIMESTAMP,
+    created_date TIMESTAMP DEFAULT NOW(),
     modified_by_id BIGINT,
-    modified_date TIMESTAMP,
+    modified_date TIMESTAMP DEFAULT NOW(),
 CONSTRAINT hostellers_pkey PRIMARY KEY (hosteller_id)
 )
 
