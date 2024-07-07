@@ -77,3 +77,17 @@ BEGIN
    DROP TYPE temp_user_type;
 END;
 $$ LANGUAGE plpgsql;
+
+
+--Table Data To Json Object as Map<>
+
+select * from hostel.resource;
+
+SELECT json_object_agg(resource_id, resource_name)::text AS json_data
+FROM hostel.resource WHERE resource_id in (1,2,6);
+
+SELECT json_object_agg(resource_id, json_build_object(
+	'resourceId',resource_id,
+	'resourceName', resource_name,
+	'parentName', parent_name))::text AS json_data
+FROM hostel.resource WHERE resource_id in (1,2,6);
