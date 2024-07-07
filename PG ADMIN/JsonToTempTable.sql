@@ -86,8 +86,18 @@ select * from hostel.resource;
 SELECT json_object_agg(resource_id, resource_name)::text AS json_data
 FROM hostel.resource WHERE resource_id in (1,2,6);
 
-SELECT json_object_agg(resource_id, json_build_object(
-	'resourceId',resource_id,
-	'resourceName', resource_name,
-	'parentName', parent_name))::text AS json_data
-FROM hostel.resource WHERE resource_id in (1,2,6);
+SELECT json_object_agg(r.resource_id, json_build_object(
+	'resourceId',r.resource_id,
+	'resourceName', r.resource_name,
+	'testName',u.email_id ))::text AS json_data
+FROM hostel.resource r JOIN hostel.users u ON r.display_order = u.user_id
+	WHERE r.resource_id in (1,2);
+
+--List of Objects Json
+
+SELECT json_agg(json_build_object(
+	'resourceId',r.resource_id,
+	'resourceName', r.resource_name,
+	'testName', r.parent_name
+	))::text AS data_json
+FROM hostel.resource r WHERE r.resource_id in (1,2);
