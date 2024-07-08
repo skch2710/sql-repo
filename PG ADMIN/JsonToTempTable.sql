@@ -101,3 +101,18 @@ SELECT json_agg(json_build_object(
 	'testName', r.parent_name
 	))::text AS data_json
 FROM hostel.resource r WHERE r.resource_id in (1,2);
+
+SELECT CAST(json_object_agg(up.resource_id, r.resource_name)::TEXT AS bytea) AS data_json
+FROM hostel.user_privileges up 
+JOIN hostel.resource r ON up.resource_id = r.resource_id
+WHERE up.user_id =1;
+
+
+SELECT json_object_agg(hosteller_id,email_id) AS data_json
+FROM hostel.hostellers;
+
+SELECT CAST(CAST(json_object_agg(hosteller_id,email_id) AS TEXT) AS bytea) AS data_json
+FROM hostel.hostellers;
+
+select * from hostel.hostellers
+
