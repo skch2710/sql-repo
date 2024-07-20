@@ -1,20 +1,22 @@
 --Multiple Json Data
 
+-- DROP FUNCTION process_json_data_set(TEXT)
+
 CREATE OR REPLACE FUNCTION process_json_data_set(json_input TEXT)
-RETURNS TABLE (id INT, name TEXT, email TEXT) 
+RETURNS TABLE (data_id INT, full_name TEXT, email_id TEXT) 
 AS $$
 	/**
 	SELECT * FROM process_json_data_set('[
-    {"id": 1, "name": "John Doe", "email": "john.doe@example.com"},
-    {"id": 2, "name": "Jane Smith", "email": "jane.smith@example.com"}
+    {"data_id": 1, "full_name": "John Doe", "email_id": "john.doe@example.com"},
+    {"data_id": 2, "full_name": "Jane Smith", "email_id": "jane.smith@example.com"}
 		]');
 	*/
 BEGIN
     -- Create temporary table
     CREATE TEMP TABLE temp_users (
-        id INT,
-        name TEXT,
-        email TEXT
+        data_id INT,
+        full_name TEXT,
+        email_id TEXT
     ) ON COMMIT DROP;
 
     -- Insert JSON data into the temporary table
@@ -29,18 +31,21 @@ $$ LANGUAGE plpgsql;
 
 --Single Record
 
+-- DROP FUNCTION process_json_data(TEXT)
+
 CREATE OR REPLACE FUNCTION process_json_data(json_input TEXT)
-RETURNS TABLE (id INT, name TEXT, email TEXT) 
+RETURNS TABLE (data_id INT, full_name TEXT, email_id TEXT) 
 AS $$
 	/**
-	SELECT * FROM process_json_data('{"id": 1, "name": "", "email": "john.doe@example.com"}');
+	SELECT * FROM process_json_data('{"data_id": 1, "full_name": "", 
+		"email_id": "john.doe@example.com"}');
 	*/
 BEGIN
     -- Create temporary table
     CREATE TEMP TABLE temp_user (
-        id INT,
-        name TEXT,
-        email TEXT
+        data_id INT,
+        full_name TEXT,
+        email_id TEXT
     ) ON COMMIT DROP;
 
     -- Insert JSON data into the temporary table
@@ -89,7 +94,7 @@ FROM hostel.resource WHERE resource_id in (1,2,6);
 SELECT json_object_agg(r.resource_id, json_build_object(
 	'resourceId',r.resource_id,
 	'resourceName', r.resource_name,
-	'testName',u.email_id ))::text AS json_data
+	'testName',u.email_id )) AS json_data
 FROM hostel.resource r JOIN hostel.users u ON r.display_order = u.user_id
 	WHERE r.resource_id in (1,2);
 
