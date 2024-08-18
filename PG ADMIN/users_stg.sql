@@ -1,18 +1,21 @@
 -- DROP TABLE IF EXISTS users_stg;
 
-CREATE TABLE users_stg (
-	users_stg_id bigint GENERATED ALWAYS AS IDENTITY,
-	first_name text ,
-	last_name text ,
-	email_id text,
-	phone_number text,
-	dob text,
-	role_name text,
+
+CREATE TABLE IF NOT EXISTS hostel.users_file_data
+(
+    users_file_data_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
+    first_name character varying,
+    last_name character varying,
+    email_id character varying,
+    phone_number character varying,
+    dob character varying,
+	role_name character varying,
+    is_active character varying,
 	upload_file_id bigint,
-	status varchar(10),
-	error_message text,
-	user_id bigint,
-	CONSTRAINT users_stg_pk PRIMARY KEY (users_stg_id)
+    status character varying(10),
+    error_message character varying,
+    user_id bigint,
+    CONSTRAINT users_file_data_pkey PRIMARY KEY (users_file_data_id)
 )
 
 -- DROP TABLE IF EXISTS upload_file;
