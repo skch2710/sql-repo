@@ -34,16 +34,36 @@ CREATE TABLE upload_file (
 	CONSTRAINT users_file_pk PRIMARY KEY (upload_file_id)
 )
 
+CREATE TABLE IF NOT EXISTS hostel.file_status
+(
+    status_id integer NOT NULL,
+    status character varying(25) NOT NULL,
+    created_by_id bigint,
+    created_date timestamp without time zone DEFAULT now(),
+    modified_by_id bigint,
+    modified_date timestamp without time zone  DEFAULT now(),
+    CONSTRAINT file_status_pkey PRIMARY KEY (status_id)
+)
+
+INSERT INTO hostel.file_status(
+	status_id, status, created_by_id, modified_by_id)
+	VALUES (1,'In-Progres' ,1 ,1 ),
+		(2,'Completed' ,1 ,1 );
+
+SELECT * FROM hostel.file_status;
 
 select * from upload_file;
 
-select * from users_stg;
+select * from hostel.users_file_data where upload_file_id=7;
 
 select * from hostel.users;
 select * from hostel.user_roles;
-select * from hostel.user_privileges where user_id in (14);
+select * from hostel.user_privileges where user_id in (22);
 
-select * from fn_validate_users_stg(2);
+--select * from proc_validate_users_data(5);
 
-CALL proc_validate_users_stg(1);
+CALL proc_validate_users_data(5);
 
+SELECT fn.insrted_new_user_id FROM fn_insert_user_with_details('Test1'
+			,'test2' ,'testOnemail@gmail.com' ,'123455','12101996'
+			,'Super User' ,1 ) fn;
