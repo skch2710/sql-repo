@@ -1,4 +1,3 @@
--- FUNCTION: public.fn_insert_user_with_details(text, text, text, text, text, text)
 
 CREATE OR REPLACE FUNCTION public.fn_insert_user_with_details(
 	in_first_name text,
@@ -7,6 +6,7 @@ CREATE OR REPLACE FUNCTION public.fn_insert_user_with_details(
 	in_phone_number text,
 	in_dob text,
 	in_role_name text,
+	in_active text,
 	in_uploaded_by_id bigint)
     RETURNS TABLE(insrted_new_user_id bigint) 
     LANGUAGE 'plpgsql'
@@ -15,6 +15,16 @@ CREATE OR REPLACE FUNCTION public.fn_insert_user_with_details(
     ROWS 1000
 
 AS $BODY$
+/***
+
+-- Author	  :	Ch Sathish Kumar
+-- Create date: 24-08-2024
+-- Description:	insert user details
+
+-- EXEC SCRIPT : select * from public.fn_insert_user_with_details
+	(text, text, text, text, text, text, bigint)
+
+***/
 DECLARE err_state TEXT; err_message TEXT; err_detail TEXT; err_hint TEXT; err_context TEXT;
 DECLARE
     new_user_id BIGINT; in_role_id BIGINT;
@@ -26,7 +36,9 @@ BEGIN
         last_login_date, last_password_reset_date, created_by_id, created_date, modified_by_id, modified_date
     )
     VALUES (
-        in_first_name, in_last_name, in_email_id, NULL, in_phone_number,TO_DATE(in_dob, 'DDMMYYYY'), NULL, NULL, true,
+        in_first_name, in_last_name, in_email_id, NULL, in_phone_number,TO_DATE(in_dob, 'DDMMYYYY'), NULL,
+		CONCAT(uuid_generate_v4(),'#',(EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT),
+		CASE WHEN in_active = 'Yes' THEN true ELSE false END,
 		NULL, NULL, in_uploaded_by_id, now(), in_uploaded_by_id, now()
     )
     RETURNING user_id INTO new_user_id;

@@ -6,6 +6,15 @@ CREATE OR REPLACE PROCEDURE public.proc_validate_users_data(
 	IN in_upload_file_id bigint)
 LANGUAGE 'plpgsql'
 AS $BODY$
+	/***
+
+-- Author	  :	Ch Sathish Kumar
+-- Create date: 24-08-2024
+-- Description:	validate and insert
+
+-- EXEC SCRIPT : CALL public.proc_validate_users_data(9);
+
+***/
 DECLARE
     rec RECORD;
     email_pattern CONSTANT TEXT := '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$';
@@ -41,7 +50,7 @@ BEGIN
 		IF final_status = 'success' THEN
 			SELECT fn.insrted_new_user_id INTO new_user_id FROM fn_insert_user_with_details(
 			rec.first_name, rec.last_name, rec.email_id, rec.phone_number,
-			rec.dob, rec.role_name, in_upload_by_id) fn;
+			rec.dob, rec.role_name,rec.is_active, in_upload_by_id) fn;
 		END IF;
 
         -- Update the users_stg table
