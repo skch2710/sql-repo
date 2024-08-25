@@ -67,3 +67,19 @@ CALL proc_validate_users_data(5);
 SELECT fn.insrted_new_user_id FROM fn_insert_user_with_details('Test1'
 			,'test2' ,'testOnemail@gmail.com' ,'123455','12101996'
 			,'Super User' ,1 ) fn;
+
+/******************************/
+select * from public.upload_file order by 1 desc; --9
+
+select * from hostel.users_file_data where upload_file_id = 9;
+
+delete from hostel.user_privileges where user_id in 
+	(select user_id from hostel.users_file_data where upload_file_id = 9 and status= 'success' );    
+
+delete from hostel.user_roles where user_id in 
+	(select user_id from hostel.users_file_data where upload_file_id = 9 and status= 'success' );
+
+delete from hostel.users where user_id in 
+	(select user_id from hostel.users_file_data where upload_file_id = 9 and status= 'success' );
+
+delete from hostel.users_file_data where upload_file_id = 9;
