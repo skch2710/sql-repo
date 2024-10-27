@@ -212,6 +212,34 @@ INSERT INTO hostel.role_privileges(role_id, resource_id, read_only_flag, read_wr
 		   ( 2, 6, false, false, false, true, 1, now(), 1, now());
 
 
+------- User Validate
+
+
+CREATE TABLE IF NOT EXISTS hostel.user_validation
+(
+    user_validation_id bigint GENERATED ALWAYS AS IDENTITY,
+    user_id bigint,
+	uuid_type varchar(50),
+	uuid_link varchar(50),
+    is_active char(1),
+    created_by_id bigint,
+    created_date timestamp without time zone DEFAULT now(),
+    modified_by_id bigint,
+    modified_date timestamp without time zone DEFAULT now(),
+    CONSTRAINT h_user_validation_pkey PRIMARY KEY (user_validation_id)
+)
+
+/*
+SELECT EXISTS (
+    SELECT 1
+    FROM hostel.user_validation
+    WHERE create_pwd_uuid = 'b8c2a603-f47e-4684-af90-dd348f702ea4#1724563024168'
+       OR forgot_pwd_uuid = 'b8c2a603-f47e-4684-af90-dd348f702ea4#1724563024168'
+       OR reset_pwd_uuid = 'b8c2a603-f47e-4684-af90-dd348f702ea4#1724563024168'
+) AS is_present; */
+
+SELECT EXISTS (SELECT 1 FROM hostel.user_validation WHERE create_pwd_uuid = :uuid
+       OR forgot_pwd_uuid = :uuid OR reset_pwd_uuid = :uuid ) AS is_present;
 
 -----------
 
