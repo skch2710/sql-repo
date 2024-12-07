@@ -25,10 +25,20 @@ CREATE TABLE IF NOT EXISTS example_table (
     --CONSTRAINT fk_department FOREIGN KEY (department_id) REFERENCES departments(department_id) ON DELETE CASCADE -- Foreign key constraint
 );
 
+-- Temp Table
+
 CREATE TEMP TABLE IF NOT EXISTS temp_table(
 	temp_id bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 	temp_value VARCHAR(100)
 ) ON COMMIT DROP;
+
+BEGIN;
+
+CREATE TEMP TABLE temp_table ON COMMIT DROP AS 
+SELECT * FROM hostel.hostellers;
+SELECT * FROM temp_table;
+
+COMMIT;
 
 --- DROP --
 DROP TABLE IF EXISTS temp_table;
@@ -52,21 +62,57 @@ INSERT INTO example_table (
     uuid_generate_v4(), '192.168.1.1', '08:00:27:00:4c:02',
     '<document><title>Sample</title></document>', 'M');
 
+
+-- Insert and return Id
+WITH new_employee_id AS (
+    INSERT INTO employee (first_name, last_name, email)
+    VALUES ('test', 'test', 'test')
+    RETURNING id
+)
+INSERT INTO address (employee_id, street, city, state, zip_code)
+SELECT id, 'addr.street', 'addr.city', 'addr.state', 'addr.zip_code'
+FROM new_employee_id;
+
+--UPDATE
+UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition;
+
+
 -- ALTER
 
-ALTER TABLE example_table
-ADD COLUMN IF NOT EXISTS test varchar(10),
+ALTER TABLE IF EXISTS example_table
+ADD COLUMN IF NOT EXISTS test varchar(10) DEFAULT 'Test',
 ADD COLUMN IF NOT EXISTS start_date TIMESTAMP,
 ADD COLUMN IF NOT EXISTS end_date TIMESTAMP;
 
-ALTER TABLE example_table 
+ALTER TABLE IF EXISTS example_table 
 RENAME COLUMN document TO document_value;
 
 ALTER TABLE example_table
 DROP COLUMN IF EXISTS test;
 
+ALTER TABLE IF EXISTS example_table
+ALTER COLUMN test DROP NOT NULL;
+
+-- Find the sequence name
+SELECT pg_get_serial_sequence('hostel.users', 'user_id');
+
+ALTER TABLE example_table
+  ALTER COLUMN example_table_id DROP IDENTITY;
+
+ALTER TABLE example_table 
+	ALTER COLUMN example_table_id ADD GENERATED ALWAYS AS IDENTITY;
+
 -- SELECT 
 SELECT * FROM example_table;
+
+--- ASC NULLS LAST
+select * from emp.employees ORDER BY salary ASC;
+-- ASC NULLS FIRST
+SELECT * FROM emp.employees ORDER BY salary ASC NULLS FIRST;
+-- DESC NULLS FIRST
+select * from emp.employees ORDER BY salary DESC;
+-- DESC NULLS LAST
+SELECT * FROM emp.employees ORDER BY salary DESC NULLS LAST;
 
 -- DATE
 SELECT NOW();
@@ -80,9 +126,14 @@ SELECT TO_TIMESTAMP(NULLIF('10/20/2021',''),'MM/dd/yyyy');
 SELECT CAST(NULLIF('2021-01-25','') AS DATE)
 SELECT CAST(NULLIF('2021-01-25','') AS TIMESTAMP)
 
+SELECT now() + INTERVAL '2 hours';
 SELECT CURRENT_DATE + INTERVAL '10 days';
 SELECT CURRENT_DATE - INTERVAL '1 month';
 SELECT CURRENT_DATE + INTERVAL '5 years';
+SELECT CURRENT_DATE - CONCAT('10',' days')::INTERVAL;
+SELECT CURRENT_DATE + CONCAT('10',' days')::INTERVAL;
+
+SELECT DATE_PART('day',now()-TO_DATE('21/02/2024', 'DD/MM/YYYY'));
 
 SELECT AGE('2024-12-31', '2024-01-01');
 
@@ -98,6 +149,23 @@ select * from example_table
 SELECT * FROM example_table
 WHERE (end_date IS NULL OR (end_date > start_date AND end_date > CURRENT_DATE));
 
+select '2022-01-21' :: date
+select '2022-01-21' :: timestamp
+SELECT TO_CHAR(now(), 'MM/DD/YYYY') AS formatted_date;
+SELECT TO_CHAR(CURRENT_DATE, 'DD-MM-YYYY') AS formatted_date;
+
+--- Number Convertions
+select -20 :: numeric(14,2);
+SELECT '$' || TO_CHAR(14333333.49, '999,999,999.99') AS formatted_value;
+SELECT '₹' || TO_CHAR(14333333.49, '99,99,99,999.99') AS formatted_value;
+select ABS(-20) :: numeric(14,2);
+
+SELECT 
+  CASE 
+    WHEN 20 >= 0 THEN '$' || TO_CHAR(-20, '999,999,999.99')
+    ELSE '$ (' || TO_CHAR(ABS(-20), '999,999,999.99') || ')'
+  END AS formatted_value;
+
 -- CONCAT
 SELECT CONCAT('a',' - ','b');
 
@@ -105,6 +173,7 @@ SELECT CONCAT('a',' - ','b');
 SELECT ROW_NUMBER() OVER (ORDER BY NOW()) AS row_num;
 SELECT COUNT(1) OVER() AS total_count;
 SELECT COUNT(1) FROM example_table;
+SELECT COUNT(email_id) FROM example_table;
 SELECT COUNT(*) FROM example_table;
 
 -- MIN , MAX , GREATEST
@@ -122,6 +191,9 @@ SELECT CASE WHEN NULLIF('1','') IS NOT NULL THEN 'TRUE'
 -- COALESCE
 SELECT COALESCE(NULL,'b');
 SELECT COALESCE('','false') <> 'false';
+SELECT COALESCE(MAX(version_no),0) as max_version from file_upload.file_upload WHERE org_id=10;
+SELECT COALESCE(MAX(version_no),0)+1 as max_version from file_upload.file_upload WHERE org_id=1;
+SELECT COALESCE('true','false')='false';
 
 -- IF 
 DO $$
@@ -132,6 +204,117 @@ BEGIN
 END $$;
 
 
+--- Acive Sections 
+SELECT datname,pid,state,query , age(clock_timestamp(),query_start) as age
+FROM pg_stat_activity WHERE state <> 'idle' ORDER BY age;
+
+SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE pid in (14404);
 
 
+--- Index
+/* 
+Indexes in PostgreSQL are a powerful feature designed to improve the speed and efficiency of database queries.
+*/
 
+CREATE INDEX idx_column_name
+ON table_name USING btree (column_name);
+
+CREATE INDEX IF NOT EXISTS idx_payment_history_hosteller_id
+	ON hostel.payment_history USING btree (hosteller_id);
+	
+select * from hostel.payment_history where hosteller_id=4;
+
+DROP INDEX IF EXISTS hostel.idx_payment_history_hosteller_id;
+
+SELECT indexname, schemaname, tablename
+FROM pg_indexes
+WHERE indexname = 'idx_payment_history_hosteller_id';
+
+--- UUID
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+select uuid_generate_v4();
+select CONCAT(uuid_generate_v4(),'#',(EXTRACT(EPOCH FROM now() - INTERVAL '1 day') * 1000)::BIGINT);
+select CONCAT(uuid_generate_v4(),'#',(EXTRACT(EPOCH FROM now() - INTERVAL '4 hours') * 1000)::BIGINT);
+
+--DENSE_RANK
+/** -- Find Nth Highest Salary */
+
+SELECT e.email_id,e.salary,
+DENSE_RANK() OVER (ORDER BY e.salary DESC NULLS LAST) AS salary_rank
+FROM example_table e;
+
+SELECT t.email_id, t.salary,t.salary_rank
+FROM (
+    SELECT e.email_id, e.salary,
+        DENSE_RANK() OVER (ORDER BY e.salary DESC NULLS LAST) AS salary_rank
+    FROM example_table e
+) AS t
+WHERE t.salary_rank = 2;
+
+/** -- Find Nth Lowest Salary */
+
+select email_id,salary,
+DENSE_RANK() OVER (ORDER BY salary) AS salary_rank
+FROM example_table;
+
+SELECT t.email_id, t.salary,t.salary_rank
+FROM (
+    SELECT e.email_id, e.salary,
+        DENSE_RANK() OVER (ORDER BY salary) AS salary_rank
+    FROM example_table e
+) AS t
+WHERE t.salary_rank = 2;
+
+
+/**  ------ ROW_NUMER ------ */
+
+SELECT ROW_NUMBER() OVER (ORDER BY now()) AS id;
+
+SELECT ROW_NUMBER() OVER (ORDER BY (select 1)) AS id, e.salary,e.email_id FROM example_table e;
+
+SELECT ROW_NUMBER() OVER (ORDER BY e.salary DESC NULLS LAST) AS id, e.salary,e.email_id 
+	FROM example_table e GROUP BY e.salary,e.email_id ;
+
+SELECT ROW_NUMBER() OVER (ORDER BY e.salary) AS id, e.salary,e.email_id 
+	FROM example_table e GROUP BY e.salary,e.email_id ;
+
+--STRING_AGG 
+select * from example_table;
+SELECT
+    ROW_NUMBER() OVER (ORDER BY e.salary DESC NULLS LAST) AS id,
+    e.salary,
+    STRING_AGG(e.email_id, ',') AS email_ids,
+	STRING_AGG(e.example_table_id::VARCHAR, ',') AS ex_ids
+FROM example_table e
+GROUP BY e.salary;
+
+SELECT t.id,t.salary FROM
+(
+SELECT ROW_NUMBER() OVER (ORDER BY e.salary DESC NULLS LAST) AS id, e.salary 
+	FROM example_table e GROUP BY e.salary
+) t WHERE t.id=2;
+
+SELECT t.id,t.salary FROM
+(
+SELECT ROW_NUMBER() OVER (ORDER BY salary) AS id, e.salary
+FROM example_table e GROUP BY e.salary
+) t WHERE t.id=2;
+
+
+------- CTE Example
+
+WITH CTE1 AS (
+    SELECT column1, column2
+    FROM table1
+    WHERE condition1
+),
+CTE2 AS (
+    SELECT column3, column4
+    FROM table2
+    WHERE condition2
+)
+SELECT CTE1.column1, CTE1.column2, CTE2.column3, CTE2.column4
+FROM CTE1
+JOIN CTE2 ON CTE1.column1 = CTE2.column3;
+
+--- Queries 
