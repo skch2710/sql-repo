@@ -50,13 +50,14 @@ TRUNCATE TABLE temp_table RESTART IDENTITY;
 INSERT INTO example_table (
     full_name, email_id, age, dob, salary, joining_date, active, profile_picture,
     bio, preferences, login_attempts, created_at, updated_at, department_id,
-    ip_address, mac_address, document, gender
-) VALUES ('Test One', 'testone@example.com', 20, '2004-05-15', 20000.00, CURRENT_TIMESTAMP,
+    ip_address, mac_address, document_value, gender
+) VALUES ('Test three', 'testthree@example.com', 20, '2004-05-15', 20000.00, CURRENT_TIMESTAMP,
     TRUE, NULL,'A software engineer who loves coding.',
     '{"theme": "dark", "notifications": true}', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
     uuid_generate_v4(), '192.168.1.1', '08:00:27:00:4c:02',
     '<document><title>Sample</title></document>', 'M'),
-	('Test Two', 'testtwo@example.com', 45, '1993-05-15', 80000.00, CURRENT_TIMESTAMP,
+	
+	('Test Four', 'testrour@example.com', 45, '1993-05-15', 80000.00, CURRENT_TIMESTAMP,
     TRUE, NULL,'A software engineer who loves coding.',
     '{"theme": "dark", "notifications": true}', 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,
     uuid_generate_v4(), '192.168.1.1', '08:00:27:00:4c:02',
@@ -147,7 +148,7 @@ select * from example_table
 	WHERE (CURRENT_DATE - INTERVAL '4 days')::DATE = joining_date::DATE;
 
 SELECT * FROM example_table
-WHERE (end_date IS NULL OR (end_date > start_date AND end_date > CURRENT_DATE));
+WHERE (end_date IS NULL OR (end_date > start_date AND end_date >= CURRENT_DATE));
 
 select '2022-01-21' :: date
 select '2022-01-21' :: timestamp
@@ -317,4 +318,41 @@ SELECT CTE1.column1, CTE1.column2, CTE2.column3, CTE2.column4
 FROM CTE1
 JOIN CTE2 ON CTE1.column1 = CTE2.column3;
 
---- Queries 
+--- Queries  ---
+
+--Active and valid
+SELECT * FROM example_table
+WHERE (end_date IS NULL OR (end_date >= start_date AND end_date >= CURRENT_DATE));
+--Active
+SELECT * FROM example_table WHERE (end_date IS NULL OR (end_date >= CURRENT_DATE));
+-- Inactive
+SELECT * FROM example_table WHERE (end_date < CURRENT_DATE);
+--Between
+SELECT * FROM example_table WHERE joining_date BETWEEN '2024-12-01' AND '2024-12-06';
+
+--- GROUP HAVING
+SELECT salary , STRING_AGG(email_id, ',') AS email_ids 
+	FROM example_table GROUP BY salary HAVING COUNT(salary) > 1;
+
+SELECT salary, email_id, COUNT(salary)
+FROM example_table GROUP BY salary, email_id HAVING COUNT(*) > 1;
+
+-- QUERY ORDER ==> SELECT , FROM , WHERE ,GROUP BY , HAVING , ORDER , LIMIT 
+/*
+SQL Query Clause Order
+SELECT: Specifies the columns or expressions to retrieve.
+FROM: Indicates the table(s) or subquery(ies) from which to retrieve data.
+WHERE: Filters rows based on specified conditions.
+GROUP BY: Groups rows that have the same values in specified columns into aggregated data.
+HAVING: Filters grouped data (applied after GROUP BY).
+ORDER BY: Specifies the order of the result set (applied after HAVING).
+LIMIT or FETCH FIRST: Restricts the number of rows returned.
+*/
+SELECT column1, column2, COUNT(*) AS count
+FROM table_name
+WHERE column3 = 'some_condition'
+GROUP BY column1, column2
+HAVING COUNT(*) > 1
+ORDER BY count DESC
+LIMIT 10;
+
