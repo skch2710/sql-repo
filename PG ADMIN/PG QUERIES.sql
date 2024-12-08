@@ -318,6 +318,11 @@ SELECT CTE1.column1, CTE1.column2, CTE2.column3, CTE2.column4
 FROM CTE1
 JOIN CTE2 ON CTE1.column1 = CTE2.column3;
 
+-- SOUNDEX
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+
+SELECT SOUNDEX('ABC');
+
 --- Queries  ---
 
 --Active and valid
