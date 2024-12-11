@@ -361,3 +361,10 @@ HAVING COUNT(*) > 1
 ORDER BY count DESC
 LIMIT 10;
 
+
+---- Union
+select full_name from example_table
+UNION 
+select 'sathish';
+
+
