@@ -361,10 +361,32 @@ HAVING COUNT(*) > 1
 ORDER BY count DESC
 LIMIT 10;
 
-
 ---- Union
 select full_name from example_table
 UNION 
 select 'sathish';
+
+---- TRIM
+SELECT TRIM('  ss  ');
+SELECT TRIM(NULL);
+
+---- LIKE 
+select * from example_table where email_id like '%Te%'
+select * from example_table where email_id ilike '%Te%' --Contains ignorecase
+select * from example_table where email_id ilike 'Te%' --StartWith ignorecase
+select * from example_table where salary::text ilike '80%' --startWith
+
+SELECT * FROM example_table 
+WHERE email_id ILIKE ANY (ARRAY['%testthree%', '%TestFour%']);
+
+SELECT * FROM example_table WHERE example_table_id =
+ANY(CAST(STRING_TO_ARRAY('1,2,3',',') AS INT[]))
+AND (email_id = ANY(CAST(STRING_TO_ARRAY('testthree@example.com,testfour@example.com',',') AS VARCHAR[]))
+OR 'testthr1,TestFour' ='')
+
+
+
+
+
 
 
