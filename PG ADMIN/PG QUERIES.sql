@@ -199,8 +199,10 @@ SELECT COALESCE('true','false')='false';
 -- IF 
 DO $$
 BEGIN
-   IF COALESCE('a','') <> '' THEN
+   IF COALESCE('a','a') <> '' THEN
       RAISE NOTICE 'TRUE';
+	ELSE 
+	  RAISE NOTICE 'FALSE';
    END IF;
 END $$;
 
