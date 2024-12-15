@@ -387,7 +387,12 @@ AND (email_id = ANY(CAST(STRING_TO_ARRAY('testthree@example.com,testfour@example
 OR 'testthr1,TestFour' ='')
 
 
+---- SUBSTRING
+SELECT SUBSTRING(TRIM(NULLIF('abcderfdg   ','')) FROM 1 FOR 5);
 
+---- UPPER , LOWER
+SELECT UPPER('ascdfg ');
+SELECT LOWER('ASCDFG ');
 
 
 

@@ -1,0 +1,17 @@
+select GETDATE();
+
+SELECT TRIM('  D  ');
+
+SELECT SUBSTRING(TRIM(NULLIF('ASDCDFVS   ','')),1,5);
+
+-- UPPER , LOWER
+SELECT UPPER('aaaaa');
+SELECT LOWER('AAAAA');
+
+-- CONCAT
+SELECT CONCAT('abc',' - ','cdf');
+
+SELECT 1;
+
+
+
