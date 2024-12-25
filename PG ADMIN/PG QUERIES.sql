@@ -395,5 +395,7 @@ SELECT UPPER('ascdfg ');
 SELECT LOWER('ASCDFG ');
 
 
-
+---- Version
+SHOW server_version;
+SELECT VERSION();
 
