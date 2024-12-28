@@ -121,3 +121,9 @@ FROM hostel.hostellers;
 
 select * from hostel.hostellers
 
+
+SELECT json_build_object('minDob', MIN(dob),'maxDob', MAX(dob)) AS dob_range
+FROM hostel.hostellers;
+
+SELECT json_build_object('minDob', TO_CHAR(MIN(dob),'MM/dd/yyyy'),'maxDob',
+TO_CHAR(MAX(dob),'MM/dd/yyyy')) AS dob_range FROM hostel.hostellers;
