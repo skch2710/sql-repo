@@ -268,6 +268,14 @@ FROM (
 ) AS t
 WHERE t.salary_rank = 2;
 
+SELECT t.email_id, t.salary, t.salary_rank
+FROM (
+    SELECT e.email_id, e.salary,
+        ROW_NUMBER() OVER (ORDER BY salary) AS salary_rank
+    FROM example_table e
+) AS t
+WHERE t.salary_rank = 2;
+
 
 /**  ------ ROW_NUMER ------ */
 
