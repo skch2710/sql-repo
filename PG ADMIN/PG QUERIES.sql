@@ -407,3 +407,46 @@ SELECT LOWER('ASCDFG ');
 SHOW server_version;
 SELECT VERSION();
 
+--------------------------------
+
+CREATE TABLE tracker_table (
+    primary_id SERIAL PRIMARY KEY,
+    code_id INT,
+    code_value TEXT,
+    is_complete CHAR(1),
+    uuid UUID DEFAULT gen_random_uuid()
+);
+
+INSERT INTO tracker_table (primary_id, code_id, code_value, is_complete, uuid) VALUES
+(1, 101, 'abc', 'Y', gen_random_uuid()),
+(2, 101, 'xcv', 'N', gen_random_uuid()),
+(3, 101, 'jjj', 'N', gen_random_uuid()),
+(4, 102, 'llll', 'N', gen_random_uuid());
+
+
+SELECT * FROM tracker_table;
+
+SELECT DISTINCT ON (code_id) code_id,primary_id
+FROM tracker_table ORDER BY code_id,primary_id DESC;
+
+WITH max_data AS (
+	SELECT code_id , MAX(primary_id) AS max_primary_id
+	FROM tracker_table 
+	WHERE code_id IS NOT NULL 
+	GROUP BY code_id)
+SELECT t.* 
+FROM tracker_table t 
+JOIN max_data md ON t.primary_id = md.max_primary_id
+WHERE t.is_complete = 'N';
+
+
+SELECT * FROM (
+	SELECT DISTINCT ON (code_id) *
+	FROM tracker_table 
+	WHERE code_id IS NOT NULL 
+	ORDER BY code_id,primary_id DESC )
+WHERE is_complete = 'N';
+
+
+
+
