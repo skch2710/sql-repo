@@ -448,5 +448,24 @@ SELECT * FROM (
 WHERE is_complete = 'N';
 
 
+------------ SPLIT ---------
+
+SELECT 
+TRIM(split_part('ABC = 1', '=', 1)) AS tb_name,
+TRIM(split_part('ABC = 1', '=', 2))::INT AS tb_id;
+
+WITH parsed_data AS (
+    SELECT 
+        TRIM(split_part(value, '=', 1)) AS tb_name,
+        TRIM(split_part(value, '=', 2)) AS tb_value
+    FROM unnest(string_to_array('ABC = 1 AND ABC = 2 AND ABC = 3', 'AND')) AS value
+)
+SELECT 
+    tb_name,
+    STRING_AGG(tb_value, ',') AS tb_values
+FROM parsed_data
+GROUP BY tb_name;
+
+
 
 

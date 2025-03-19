@@ -127,3 +127,59 @@ FROM hostel.hostellers;
 
 SELECT json_build_object('minDob', TO_CHAR(MIN(dob),'MM/dd/yyyy'),'maxDob',
 TO_CHAR(MAX(dob),'MM/dd/yyyy')) AS dob_range FROM hostel.hostellers;
+
+
+-------- JSON to Temp Table JSONB ------------
+
+DO $$
+DECLARE
+    json_input JSONB := '[
+        {
+            "firstName": "John",
+            "lastName": "Doe",
+            "email": "john.doe@example.com",
+            "age": 28,
+            "dob": "1995-05-15"
+        },
+        {
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "email": "jane.smith@example.com",
+            "age": 34,
+            "dob": "1989-11-22"
+        },
+        {
+            "firstName": "Alice",
+            "lastName": "Johnson",
+            "email": "alice.johnson@example.com",
+            "age": 42,
+            "dob": "1981-03-10"
+        }
+    ]'::JSONB;
+BEGIN
+    -- Create a temporary table
+    CREATE TEMP TABLE tmp_input_data (
+        id SERIAL PRIMARY KEY,
+        first_name TEXT,
+        last_name TEXT,
+        email TEXT,
+        age INT,
+        dob DATE
+    ); --ON COMMIT DROP;
+
+    -- Insert data from the JSON array into the temporary table
+    INSERT INTO tmp_input_data (first_name, last_name, email, age, dob)
+    SELECT
+        elem ->> 'firstName' AS first_name,
+        elem ->> 'lastName' AS last_name,
+        elem ->> 'email' AS email,
+        (elem ->> 'age')::INT AS age,
+        (elem ->> 'dob')::DATE AS dob
+    FROM jsonb_array_elements(json_input) AS elem;
+
+    -- Select and display the inserted data
+    RAISE NOTICE 'Inserted data:';
+
+END $$;
+
+-- SELECT * FROM tmp_input_data;
