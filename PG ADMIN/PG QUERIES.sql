@@ -74,9 +74,38 @@ INSERT INTO address (employee_id, street, city, state, zip_code)
 SELECT id, 'addr.street', 'addr.city', 'addr.state', 'addr.zip_code'
 FROM new_employee_id;
 
+--Insert From Another Table and returning Id
+INSERT INTO employee (first_name, last_name, email)
+SELECT first_name, last_name, email
+FROM temp_emp te
+WHERE te.emp_id = 0
+RETURNING emp_id INTO v_emp_id;
+
 --UPDATE
 UPDATE table_name SET column1 = value1, column2 = value2, ... WHERE condition;
 
+--Update Existing table and Condition
+UPDATE employee emp
+SET end_date = v_current_date,
+	modified_by_id = in_user_id,modified_date = v_now
+WHERE emp.emp_id = v_emp_id;
+
+--Update From Another Table Data and Condition
+UPDATE employee emp
+SET start_date = t.start_date,end_date = t.end_date,
+	modified_by_id = in_user_id,modified_date = v_now
+FROM temp_employee t
+WHERE emp.drug_id = t.drug_id AND emp.emp_id = v_dynamic_list_id
+AND COALESCE(emp.end_date,'9999-12-31') >= CURRENT_DATE
+AND t.emp_id <> 0;
+
+UPDATE employee emp
+SET start_date = t.start_date,end_date = t.end_date,
+	modified_by_id = in_user_id,modified_date = v_now
+FROM temp_employee t
+WHERE emp.emp_id = t.emp_id
+AND COALESCE(emp.end_date,'9999-12-31') >= CURRENT_DATE
+AND t.emp_id <> 0;
 
 -- ALTER
 
@@ -196,15 +225,30 @@ SELECT COALESCE(MAX(version_no),0) as max_version from file_upload.file_upload W
 SELECT COALESCE(MAX(version_no),0)+1 as max_version from file_upload.file_upload WHERE org_id=1;
 SELECT COALESCE('true','false')='false';
 
--- IF 
+-- IF ELSE 
 DO $$
 BEGIN
+
+IF condin THEN
+	--PROCESS
+END IF;
+
+--IF ELSE
+
    IF COALESCE('a','a') <> '' THEN
       RAISE NOTICE 'TRUE';
 	ELSE 
 	  RAISE NOTICE 'FALSE';
    END IF;
 END $$;
+
+-- FOR LOOP
+FOR rec IN 
+	--SELECT RECORDS WITH CONDITION
+LOOP
+	--Procces the DATA
+	--IF Need records data rec.emp_id
+END LOOP;
 
 
 --- Acive Sections 
@@ -340,6 +384,14 @@ SELECT * FROM example_table
 WHERE (end_date IS NULL OR (end_date >= start_date AND end_date >= CURRENT_DATE));
 --Active
 SELECT * FROM example_table WHERE (end_date IS NULL OR (end_date >= CURRENT_DATE));
+
+SELECT * FROM example_table 
+WHERE COALESCE(end_date::DATE, CURRENT_DATE) >= CURRENT_DATE AND 
+COALESCE(end_date::DATE, CURRENT_DATE) >= start_date::DATE;
+
+SELECT * FROM example_table 
+WHERE COALESCE(end_date::DATE, CURRENT_DATE) < CURRENT_DATE;
+
 -- Inactive
 SELECT * FROM example_table WHERE (end_date < CURRENT_DATE);
 --Between
