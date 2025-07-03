@@ -519,5 +519,55 @@ FROM parsed_data
 GROUP BY tb_name;
 
 
+-----------********************---------------------
+CREATE TABLE IF NOT EXISTS exclusion_drugs (
+    exclusion_id SERIAL PRIMARY KEY,          -- Primary key
+    list_history_id BIGINT NOT NULL,          -- List history reference
+    drug_id BIGINT NOT NULL,                  -- Common drug_id
+    start_date DATE NOT NULL,                 -- Start date of exclusion
+    end_date DATE,                            -- Optional end date
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE IF NOT EXISTS exception_drugs (
+    exception_id SERIAL PRIMARY KEY,          -- Primary key
+    list_history_id BIGINT NOT NULL,          -- List history reference
+    drug_id BIGINT NOT NULL,                  -- Common drug_id
+    start_date DATE NOT NULL,                 -- Start date of exception
+    end_date DATE,                            -- Optional end date
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO exclusion_drugs (list_history_id, drug_id, start_date, end_date)
+VALUES
+(101, 1, '2024-06-01', '2024-12-31'),
+(101, 2, '2024-07-01', '2025-01-31'),
+(101, 3, '2025-08-01', '2025-12-31'),   -- Future record
+(101, 4, '2024-05-01', '2024-09-30');
+
+INSERT INTO exception_drugs (list_history_id, drug_id, start_date, end_date)
+VALUES
+(101, 2, '2024-06-15', '2025-01-15'),
+(101, 3, '2024-07-01', '2024-12-31'),   -- drug_id 3 present in both tables
+(101, 5, '2024-05-01', '2024-11-30');
+
+
+
+SELECT * FROM exclusion_drugs WHERE COALESCE(start_date,CURRENT_DATE) >= CURRENT_DATE;;
+SELECT * FROM exception_drugs ;
+
+
+EXPLAIN ANALYZE
+SELECT ed.*
+FROM exclusion_drugs ed
+LEFT JOIN exception_drugs ex
+  ON ed.drug_id = ex.drug_id AND ed.list_history_id = ex.list_history_id
+  AND ex.start_date <= COALESCE(ex.end_date, '9999-12-31')
+  AND COALESCE(ex.end_date, '9999-12-31') >= CURRENT_DATE
+WHERE ed.start_date <= COALESCE(ed.end_date, '9999-12-31')
+  AND COALESCE(ed.end_date, '9999-12-31') >= CURRENT_DATE
+  AND (ex.drug_id IS NULL
+   OR COALESCE(ed.start_date, CURRENT_DATE) >= CURRENT_DATE);
 
 
