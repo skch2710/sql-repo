@@ -426,7 +426,40 @@ LIMIT 10;
 ---- Union
 select full_name from example_table
 UNION 
-select 'sathish';
+select 'sathish' ORDER BY full_name;
+
+CREATE TEMP TABLE drug_temp_excl(
+drug_id bigint ,
+ndc varchar(10)
+);
+
+CREATE TEMP TABLE drug_temp_excp(
+drug_id bigint ,
+ndc varchar(10)
+);
+
+CREATE TEMP TABLE drug_temp_excp_final(
+drug_id bigint ,
+ndc varchar(10)
+);
+
+SELECT * FROM drug_temp_excl;
+
+SELECT * FROM drug_temp_excp;
+
+INSERT INTO drug_temp_excl
+VALUES (1,'123'),(1,'123'),(2,'456');
+
+INSERT INTO drug_temp_excp
+VALUES (1,'123'),(1,'123'),(3,'789');
+
+INSERT INTO drug_temp_excp_final
+SELECT drug_id,ndc FROM drug_temp_excl
+UNION
+SELECT drug_id,ndc FROM drug_temp_excp ORDER BY drug_id;
+
+SELECT * FROM drug_temp_excp_final;
+
 
 ---- TRIM
 SELECT TRIM('  ss  ');
