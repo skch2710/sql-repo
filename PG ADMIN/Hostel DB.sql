@@ -256,7 +256,7 @@ select * from hostel.role_privileges;
 INSERT INTO hostel.users(
 	 first_name, last_name, email_id, password_salt, phone_number, dob, mail_uuid, user_uuid, is_active, last_login_date,
 	last_password_reset_date, created_by_id, created_date, modified_by_id, modified_date)
-	VALUES ( 'system', 'user', 'skch@outlook.com', '$2a$10$OeZfp.6TtOhTQgO8DaUw8OJV4cqxQ3fZdLjUDUb46ZD/S6Z3aW1zq', 
+	VALUES ( 'system', 'user', 'skch@outlook.com', '$2a$10$1oZeYehKZTCtx8titPu.oOHFMfd/X86SJltkEew4OIwFeY/8kGQVu', 
 			'123456', now(), null,null, true, now(), now(), 1, now(), 1, now());
 
 INSERT INTO hostel.user_roles(
