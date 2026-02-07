@@ -7,8 +7,8 @@
 **What work\_mem :**
 
 ----------------
-	work\_mem is per-operation memory PostgreSQL uses for:
-	sorting (ORDER BY),hash joins, hash aggregations, merge joins
+-> work\_mem is per-operation memory PostgreSQL uses for:
+sorting (ORDER BY),hash joins, hash aggregations, merge joins
 
 👉 It is NOT global memory — it is allocated per query operation.
 
